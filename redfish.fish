@@ -1,37 +1,43 @@
 #! /usr/bin/env fish
 
+set --global _redfish_redis_cli_args
+
+function redfish-redis
+    redis-cli $_redfish_redis_cli_args $argv
+end
+
 function redfish-write --argument-names key
     set --local argc (count $argv)
     if test $argc -eq 0
         return 1
     end
 
-    redis-cli del $key >/dev/null
+    redfish-redis del $key >/dev/null
     if test $argc -eq 1
         return
     end
 
-    set --local rpushed (redis-cli rpush $key (string escape $argv[2..]))
+    set --local rpushed (redfish-redis rpush $key (string escape $argv[2..]))
     test "$rpushed" -eq (count $argv[2..])
 end
 
-function redfish-read --no-scope-shadowing --argument-names __redfish_var __redfish_key
+function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfish_key
     if test (count $argv) -ne 2
         return 1
     end
 
-    set $__redfish_var
-    if test "$(redis-cli llen $__redfish_key)" -eq 0
+    set $_redfish_var
+    if test "$(redfish-redis llen $_redfish_key)" -eq 0
         return
     end
 
     # Do not unescape the results as a whole to prevent values from
     # being split on newlines.
-    for __redfish_value in (redis-cli lrange $__redfish_key 0 -1)
-        set --append $__redfish_var "$(string unescape $__redfish_value)"
+    for _redfish_value in (redfish-redis lrange $_redfish_key 0 -1)
+        set --append $_redfish_var "$(string unescape $_redfish_value)"
     end
 
-    set --erase __redfish_key __redfish_value __redfish_var
+    set --erase _redfish_key _redfish_value _redfish_var
 end
 
 function redfish-run-tests
