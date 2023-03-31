@@ -3,7 +3,9 @@
 # Copyright (c) 2023 D. Bohdan. License: MIT.
 # Requirements: redis-cli(1), a Redis server (local by default).
 
-set --global _redfish_redis_cli_args
+if not set --query _redfish_redis_cli_args
+    set --global _redfish_redis_cli_args
+end
 
 function redfish-redis
     redis-cli $_redfish_redis_cli_args $argv
