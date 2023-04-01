@@ -10,7 +10,7 @@ if not set --query _redfish_redis_cli_args
     set --global _redfish_redis_cli_args
 end
 if not set --query _redfish_run_tests
-    set --global _redfish_run_tests 1
+    set --global _redfish_run_tests 0
 end
 
 function redfish-key --argument-names key
