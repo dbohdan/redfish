@@ -3,11 +3,14 @@
 # Copyright (c) 2023 D. Bohdan. License: MIT.
 # Requirements: redis-cli(1), a Redis server (local by default).
 
+if not set --query _redfish_key_prefix
+    set --global _redfish_key_prefix redfish:
+end
 if not set --query _redfish_redis_cli_args
     set --global _redfish_redis_cli_args
 end
-if not set --query _redfish_key_prefix
-    set --global _redfish_key_prefix redfish:
+if not set --query _redfish_run_tests
+    set --global _redfish_run_tests 1
 end
 
 function redfish-key --argument-names key
@@ -25,7 +28,7 @@ function redfish-write --argument-names key
     end
     set key (redfish-key $key)
 
-    redfish-redis del $key > /dev/null
+    redfish-redis del $key >/dev/null
     if test $argc -eq 1
         return
     end
@@ -61,8 +64,8 @@ function redfish-run-tests
     set --local got
     redfish-read got $key
     if not test "$initial" = "$got"
-      printf '|%s| != |%s|\n' "$initial" "$got"
-      return 1
+        printf '|%s| != |%s|\n' "$initial" "$got"
+        return 1
     end
 
     redfish-write $key uno
@@ -74,4 +77,6 @@ function redfish-run-tests
     test (count $got) -eq 0 || return 3
 end
 
-redfish-run-tests
+if test "$_redfish_run_tests" -gt 0
+    redfish-run-tests
+end
