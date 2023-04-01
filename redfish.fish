@@ -6,6 +6,13 @@
 if not set --query _redfish_redis_cli_args
     set --global _redfish_redis_cli_args
 end
+if not set --query _redfish_key_prefix
+    set --global _redfish_key_prefix redfish:
+end
+
+function redfish-key --argument-names key
+    echo -n $_redfish_key_prefix$key
+end
 
 function redfish-redis
     redis-cli $_redfish_redis_cli_args $argv
@@ -16,8 +23,9 @@ function redfish-write --argument-names key
     if test $argc -eq 0
         return 1
     end
+    set key (redfish-key $key)
 
-    redfish-redis del $key >/dev/null
+    redfish-redis del $key > /dev/null
     if test $argc -eq 1
         return
     end
@@ -30,6 +38,7 @@ function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfis
     if test (count $argv) -ne 2
         return 1
     end
+    set _redfish_key (redfish-key $_redfish_key)
 
     set $_redfish_var
     if test "$(redfish-redis llen $_redfish_key)" -eq 0
@@ -47,19 +56,22 @@ end
 
 function redfish-run-tests
     set --local initial foo1\nfoo2 bar βαζ
-    set --local key fish-redfish-test
+    set --local key fish-redis-test
     redfish-write $key $initial
     set --local got
     redfish-read got $key
-    test "$initial" = "$got" || return 1
+    if not test "$initial" = "$got"
+      printf '|%s| != |%s|\n' "$initial" "$got"
+      return 1
+    end
 
     redfish-write $key uno
     redfish-read got $key
-    test (count $got) -eq 1 || return 1
+    test (count $got) -eq 1 || return 2
 
     redfish-write $key
     redfish-read got $key
-    test (count $got) -eq 0 || return 1
+    test (count $got) -eq 0 || return 3
 end
 
 redfish-run-tests
