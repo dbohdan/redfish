@@ -29,23 +29,45 @@ function redfish-redis
     redis-cli $_redfish_redis_cli_args $argv
 end
 
+function redfish-delete --argument-names key
+    argparse --min-args 1 --max-args 1 -- $argv
+    or return
+
+    set key (redfish-key $key)
+
+    test "$(redfish-redis del $key)" -eq 1
+    # This return is currently useless but won't be if we add more commands
+    # later. Our stylistic choice is to have these returns.
+    or return
+end
+
+function redfish-exists --argument-names key
+    argparse --min-args 1 --max-args 1 -- $argv
+    or return
+
+    set key (redfish-key $key)
+
+    test "$(redfish-redis exists $key)" -eq 1
+    or return
+end
+
 function redfish-read --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
 
     set key (redfish-key $key)
-    
+
     string unescape "$(redfish-redis get $key)"
     or return
 end
- 
+
 function redfish-read-list --no-scope-shadowing --argument-names _redfish_var _redfish_key
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
     set _redfish_key (redfish-key $_redfish_key)
     set $_redfish_var
-    
+
     test "$(redfish-redis llen $_redfish_key)" -eq 0
     and return
 
@@ -68,17 +90,17 @@ function redfish-write --argument-names key value
 
     set key (redfish-key $key)
 
-    redfish-redis set $key $value > /dev/null
+    redfish-redis set $key $value >/dev/null
     or return
 end
- 
+
 function redfish-write-list --argument-names key
     argparse --min-args 1 -- $argv
     or return
 
     set key (redfish-key $key)
 
-    redfish-redis del $key > /dev/null
+    redfish-redis del $key >/dev/null
     or return
 
     test (count $argv) -eq 1

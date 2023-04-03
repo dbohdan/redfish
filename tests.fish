@@ -13,25 +13,39 @@ begin
     redfish-read-list got $key
     if not test "$initial" = "$got"
         printf '|%s| != |%s|\n' "$initial" "$got"
-        return 1
+        return 101
     end
 
     redfish-write-list $key uno
     redfish-read-list got $key
     test (count $got) -eq 1
-    or return 2
+    or return 102
 
     redfish-write-list $key
     redfish-read-list got $key
     test (count $got) -eq 0
-    or return 3
+    or return 103
 
     set got "$(redfish-read $key)"
     test "$got" = ''
-    or return 4
+    or return 104
 
     redfish-write $key "$foo"
     set got "$(redfish-read $key)"
     test "$got" = "$foo"
-    or return 5
+    or return 105
+
+    redfish-exists $key
+    or return 106
+
+    redfish-delete $key
+    or return 107
+
+    redfish-delete $key
+    and return 108
+
+    redfish-exists $key
+    and return 109
+
+    return 0
 end
