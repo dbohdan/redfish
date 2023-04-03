@@ -23,38 +23,46 @@ end
 
 function redfish-write --argument-names key
     set --local argc (count $argv)
-    if test $argc -eq 0
-        return 1
-    end
+
+    test $argc -eq 0
+    and return 1
+
     set key (redfish-key $key)
 
     redfish-redis del $key >/dev/null
-    if test $argc -eq 1
-        return
-    end
+    or return
+
+    test $argc -eq 1
+    and return
+
 
     set --local rpushed (redfish-redis rpush $key (string escape $argv[2..]))
+    or return
+
     test "$rpushed" -eq (count $argv[2..])
 end
 
 function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfish_key
-    if test (count $argv) -ne 2
-        return 1
-    end
+    test (count $argv) -ne 2
+    and return 1
+
     set _redfish_key (redfish-key $_redfish_key)
 
     set $_redfish_var
-    if test "$(redfish-redis llen $_redfish_key)" -eq 0
-        return
-    end
+    test "$(redfish-redis llen $_redfish_key)" -eq 0
+    and return
 
     # Do not unescape the results as a whole to prevent values from
     # being split on newlines.
-    for _redfish_value in (redfish-redis lrange $_redfish_key 0 -1)
+    set --local _redfish_list (redfish-redis lrange $_redfish_key 0 -1)
+    or return
+
+    for _redfish_value in $_redfish_list
         set --append $_redfish_var "$(string unescape $_redfish_value)"
+        or return
     end
 
-    set --erase _redfish_key _redfish_value _redfish_var
+    set --erase _redfish_key _redfish_list _redfish_value _redfish_var
 end
 
 function redfish-run-tests
@@ -70,11 +78,13 @@ function redfish-run-tests
 
     redfish-write $key uno
     redfish-read got $key
-    test (count $got) -eq 1 || return 2
+    test (count $got) -eq 1
+    or return 2
 
     redfish-write $key
     redfish-read got $key
-    test (count $got) -eq 0 || return 3
+    test (count $got) -eq 0
+    or return 3
 end
 
 if test "$_redfish_run_tests" -gt 0
