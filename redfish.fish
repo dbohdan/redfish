@@ -1,7 +1,11 @@
 #! /usr/bin/env fish
 # redfish: use Redis as a key-value store from fish.
 # Copyright (c) 2023 D. Bohdan. License: MIT.
-# Requirements: redis-cli(1), a Redis server (local by default).
+#
+# Requirements:
+# * fish 3.4.1 or later (older versions may work but have not been tested);
+# * redis-cli(1);
+# * a Redis server (local by default).
 
 if not set --query _redfish_key_prefix
     set --global _redfish_key_prefix redfish:
