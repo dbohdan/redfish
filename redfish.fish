@@ -44,6 +44,7 @@ function redfish-write --argument-names key
     or return
 
     test "$rpushed" -eq (count $argv[2..])
+    or return
 end
 
 function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfish_key
@@ -51,8 +52,8 @@ function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfis
     or return
 
     set _redfish_key (redfish-key $_redfish_key)
-
     set $_redfish_var
+    
     test "$(redfish-redis llen $_redfish_key)" -eq 0
     and return
 
