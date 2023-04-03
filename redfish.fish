@@ -1,6 +1,7 @@
 #! /usr/bin/env fish
 # redfish: use Redis as a key-value store from fish.
 # Copyright (c) 2023 D. Bohdan. License: MIT.
+# Put this file in $__fish_config_dir/cond.f/
 #
 # Requirements:
 # * fish 3.4.1 or later (older versions may work but have not been tested);
@@ -28,7 +29,7 @@ function redfish-redis
     redis-cli $_redfish_redis_cli_args $argv
 end
 
-function redfish-write --argument-names key
+function redfish-write-list --argument-names key
     argparse --min-args 1 -- $argv
     or return
 
@@ -47,7 +48,7 @@ function redfish-write --argument-names key
     or return
 end
 
-function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfish_key
+function redfish-read-list --no-scope-shadowing --argument-names _redfish_var _redfish_key
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
@@ -76,21 +77,21 @@ function redfish-run-tests
 
     set --local initial foo1\nfoo2 bar βαζ
     set --local key fish-redis-test
-    redfish-write $key $initial
+    redfish-write-list $key $initial
     set --local got
-    redfish-read got $key
+    redfish-read-list got $key
     if not test "$initial" = "$got"
         printf '|%s| != |%s|\n' "$initial" "$got"
         return 1
     end
 
-    redfish-write $key uno
-    redfish-read got $key
+    redfish-write-list $key uno
+    redfish-read-list got $key
     test (count $got) -eq 1
     or return 2
 
-    redfish-write $key
-    redfish-read got $key
+    redfish-write-list $key
+    redfish-read-list got $key
     test (count $got) -eq 0
     or return 3
 end
