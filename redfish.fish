@@ -29,25 +29,16 @@ function redfish-redis
     redis-cli $_redfish_redis_cli_args $argv
 end
 
-function redfish-write-list --argument-names key
-    argparse --min-args 1 -- $argv
+function redfish-read --argument-names key
+    argparse --min-args 1 --max-args 1 -- $argv
     or return
 
     set key (redfish-key $key)
-
-    redfish-redis del $key >/dev/null
-    or return
-
-    test (count $argv) -eq 1
-    and return
-
-    set --local rpushed (redfish-redis rpush $key (string escape $argv[2..]))
-    or return
-
-    test "$rpushed" -eq (count $argv[2..])
+    
+    string unescape "$(redfish-redis get $key)"
     or return
 end
-
+ 
 function redfish-read-list --no-scope-shadowing --argument-names _redfish_var _redfish_key
     argparse --min-args 2 --max-args 2 -- $argv
     or return
@@ -71,6 +62,35 @@ function redfish-read-list --no-scope-shadowing --argument-names _redfish_var _r
     set --erase _redfish_key _redfish_list _redfish_value _redfish_var
 end
 
+function redfish-write --argument-names key value
+    argparse --min-args 2 --max-args 2 -- $argv
+    or return
+
+    set key (redfish-key $key)
+
+    redfish-redis set $key $value > /dev/null
+    or return
+end
+ 
+function redfish-write-list --argument-names key
+    argparse --min-args 1 -- $argv
+    or return
+
+    set key (redfish-key $key)
+
+    redfish-redis del $key > /dev/null
+    or return
+
+    test (count $argv) -eq 1
+    and return
+
+    set --local rpushed (redfish-redis rpush $key (string escape $argv[2..]))
+    or return
+
+    test "$rpushed" -eq (count $argv[2..])
+    or return
+end
+ 
 function redfish-run-tests
     argparse --max-args 0 -- $argv
     or return
@@ -94,6 +114,15 @@ function redfish-run-tests
     redfish-read-list got $key
     test (count $got) -eq 0
     or return 3
+
+    set got "$(redfish-read $key)"
+    test "$got" = ''
+    or return 4
+    
+    redfish-write $key "$foo"
+    set got "$(redfish-read $key)"
+    test "$got" = "$foo"
+    or return 5  
 end
 
 if test "$_redfish_run_tests" -gt 0
