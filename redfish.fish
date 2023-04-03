@@ -18,6 +18,9 @@ if not set --query _redfish_run_tests
 end
 
 function redfish-key --argument-names key
+    argparse --min-args 1 --max-args 1 -- $argv
+    or return
+
     echo -n $_redfish_key_prefix$key
 end
 
@@ -26,19 +29,16 @@ function redfish-redis
 end
 
 function redfish-write --argument-names key
-    set --local argc (count $argv)
-
-    test $argc -eq 0
-    and return 1
+    argparse --min-args 1 -- $argv
+    or return
 
     set key (redfish-key $key)
 
     redfish-redis del $key >/dev/null
     or return
 
-    test $argc -eq 1
+    test (count $argv) -eq 1
     and return
-
 
     set --local rpushed (redfish-redis rpush $key (string escape $argv[2..]))
     or return
@@ -47,8 +47,8 @@ function redfish-write --argument-names key
 end
 
 function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfish_key
-    test (count $argv) -ne 2
-    and return 1
+    argparse --min-args 2 --max-args 2 -- $argv
+    or return
 
     set _redfish_key (redfish-key $_redfish_key)
 
@@ -70,6 +70,9 @@ function redfish-read --no-scope-shadowing --argument-names _redfish_var _redfis
 end
 
 function redfish-run-tests
+    argparse --max-args 0 -- $argv
+    or return
+
     set --local initial foo1\nfoo2 bar βαζ
     set --local key fish-redis-test
     redfish-write $key $initial
