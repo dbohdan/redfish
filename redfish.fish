@@ -1,7 +1,9 @@
 #! /usr/bin/env fish
 # redfish: use Redis as a key-value store from fish.
 # Copyright (c) 2023 D. Bohdan. License: MIT.
-# Put this file in $__fish_config_dir/cond.f/
+#
+# Installation:
+# Put this file in $__fish_config_dir/conf.d/.
 #
 # Requirements:
 # * fish 3.4.1 or later (older versions may work but have not been tested);
@@ -36,8 +38,10 @@ function redfish-delete --argument-names key
     set key (redfish-key $key)
 
     test "$(redfish-redis del $key)" -eq 1
-    # This return is currently useless but won't be if we add more commands
-    # later. Our stylistic choice is to have these returns.
+    # The following `or return` statement does nothing. While currently
+    # useless, it will become necessary for corrent error handling if we add
+    # commands below it. Our stylistic choice is to have these returns from
+    # the start rather than risk forgetting to add them later.
     or return
 end
 
