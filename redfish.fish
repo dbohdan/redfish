@@ -1,4 +1,3 @@
-#! /usr/bin/env fish
 # redfish: use Redis as a key-value store from fish.
 # Copyright (c) 2023 D. Bohdan. License: MIT.
 #
