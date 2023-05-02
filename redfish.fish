@@ -24,13 +24,13 @@ function redfish --no-scope-shadowing
 
     if string match --quiet --regex -- \
             '^(-\?|-h|-help|--help|help)$' \ 
-            $argv[1]
+        $argv[1]
         __redfish_usage
         return
     end
 
     if not string match --quiet --regex -- \
-            '^(delete|exists|key|read|read-list|redis|write|write-list)$' \
+            '^(delete|exists|incr|key|read|read-list|redis|write|write-list)$' \
             $argv[1]
         printf 'redfish: %s: invalid subcommand\n' $argv[1] >/dev/stderr
         return 1
@@ -42,6 +42,7 @@ end
 
 function __redfish_usage
     printf 'usage: redfish (delete|exists|key|read) KEY\n' >/dev/stderr
+    printf '       redfish incr VAR [INCREMENT]\n' >/dev/stderr
     printf '       redfish read-list VAR KEY\n' >/dev/stderr
     printf '       redfish redis [ARG ...]\n' >/dev/stderr
     printf '       redfish write KEY VALUE\n' >/dev/stderr
@@ -81,6 +82,24 @@ function __redfish_exists --argument-names key
 
     test "$(__redfish_redis exists $key)" -eq 1
     or return
+end
+
+function __redfish_incr --argument-names key inc
+    set --local count (count $argv)
+    if test "$count" -lt 1 -o "$count" -gt 2
+        return 1
+    end
+
+    set --local cmd incrby
+    if test -z "$inc"
+        set inc 1
+    end
+    if test "$inc" -lt 0
+        set cmd decrby
+        set inc (math - $inc)
+    end
+
+    __redfish_redis $cmd (__redfish_key $key) $inc >/dev/null
 end
 
 function __redfish_read --argument-names key

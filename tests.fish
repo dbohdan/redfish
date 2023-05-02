@@ -47,5 +47,12 @@ begin
     redfish exists $key
     and return 109
 
+    redfish incr $key
+    redfish incr $key
+    redfish incr $key 3
+    redfish incr $key -2
+    test (redfish read $key) -eq 3
+    or return 110
+
     return 0
 end
