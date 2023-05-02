@@ -8,30 +8,30 @@ source redfish.fish
 begin
     set --local initial foo1\nfoo2 bar βαζ
     set --local key fish-redis-test
-    redfish write-list $key $initial
+    redfish set-list $key $initial
     set --local got
-    redfish read-list got $key
+    redfish get-list got $key
     if not test "$initial" = "$got"
         printf '|%s| != |%s|\n' "$initial" "$got"
         return 101
     end
 
-    redfish write-list $key uno
-    redfish read-list got $key
+    redfish set-list $key uno
+    redfish get-list got $key
     test (count $got) -eq 1
     or return 102
 
-    redfish write-list $key
-    redfish read-list got $key
+    redfish set-list $key
+    redfish get-list got $key
     test (count $got) -eq 0
     or return 103
 
-    set got "$(redfish read $key)"
+    set got "$(redfish get $key)"
     test "$got" = ''
     or return 104
 
-    redfish write $key "$foo"
-    set got "$(redfish read $key)"
+    redfish set $key "$foo"
+    set got "$(redfish get $key)"
     test "$got" = "$foo"
     or return 105
 
@@ -51,7 +51,7 @@ begin
     redfish incr $key
     redfish incr $key 3
     redfish incr $key -2
-    test (redfish read $key) -eq 3
+    test (redfish get $key) -eq 3
     or return 110
 
     return 0

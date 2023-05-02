@@ -30,7 +30,7 @@ function redfish --no-scope-shadowing
     end
 
     if not string match --quiet --regex -- \
-            '^(delete|exists|incr|key|read|read-list|redis|write|write-list)$' \
+            '^(delete|exists|incr|key|get|get-list|redis|set|set-list)$' \
             $argv[1]
         printf 'redfish: %s: invalid subcommand\n' $argv[1] >/dev/stderr
         return 1
@@ -41,12 +41,12 @@ function redfish --no-scope-shadowing
 end
 
 function __redfish_usage
-    printf 'usage: redfish (delete|exists|key|read) KEY\n' >/dev/stderr
+    printf 'usage: redfish (delete|exists|get|key) KEY\n' >/dev/stderr
+    printf '       redfish get-list VAR KEY\n' >/dev/stderr
     printf '       redfish incr VAR [INCREMENT]\n' >/dev/stderr
-    printf '       redfish read-list VAR KEY\n' >/dev/stderr
     printf '       redfish redis [ARG ...]\n' >/dev/stderr
-    printf '       redfish write KEY VALUE\n' >/dev/stderr
-    printf '       redfish write-list KEY [VALUE ...]\n' >/dev/stderr
+    printf '       redfish set KEY VALUE\n' >/dev/stderr
+    printf '       redfish set-list KEY [VALUE ...]\n' >/dev/stderr
 end
 
 function __redfish_key --argument-names key
@@ -102,7 +102,7 @@ function __redfish_incr --argument-names key inc
     __redfish_redis $cmd (__redfish_key $key) $inc >/dev/null
 end
 
-function __redfish_read --argument-names key
+function __redfish_get --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
 
@@ -112,7 +112,7 @@ function __redfish_read --argument-names key
     or return
 end
 
-function __redfish_read_list --no-scope-shadowing --argument-names __redfish_dst_var __redfish_src_key
+function __redfish_get_list --no-scope-shadowing --argument-names __redfish_dst_var __redfish_src_key
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
@@ -139,7 +139,7 @@ function __redfish_read_list --no-scope-shadowing --argument-names __redfish_dst
         __redfish_value
 end
 
-function __redfish_write --argument-names key value
+function __redfish_set --argument-names key value
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
@@ -149,7 +149,7 @@ function __redfish_write --argument-names key value
     or return
 end
 
-function __redfish_write_list --argument-names key
+function __redfish_set_list --argument-names key
     argparse --min-args 1 -- $argv
     or return
 
