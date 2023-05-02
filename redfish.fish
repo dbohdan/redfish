@@ -23,8 +23,8 @@ function redfish --no-scope-shadowing
     end
 
     if string match --quiet --regex -- \
-            '^(-\?|-h|-help|--help|help)$' \ 
-        $argv[1]
+            '^(-\?|-h|-help|--help|help)$' \
+            $argv[1]
         __redfish_usage
         return
     end
