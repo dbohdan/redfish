@@ -54,7 +54,7 @@ function __redfish_delete --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
 
-    test "$(__redfish_redis del $key)" -eq 1
+    test "$(__redfish_redis del $key)" -gt 0
     # The following `or return` statement does nothing. While currently
     # useless, it will become necessary for corrent error handling if we add
     # commands below it. Our stylistic choice is to have these returns from
