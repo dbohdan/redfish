@@ -17,8 +17,35 @@ if not set --query __redfish_redis_cli_args
 end
 
 function redfish --no-scope-shadowing
+    if test (count $argv) -eq 0
+        printf 'redfish: missing subcommand\n' >/dev/stderr
+        return 1
+    end
+
+    if string match --quiet --regex -- \
+            '^(-\?|-h|-help|--help|help)$' \ 
+            $argv[1]
+        __redfish_usage
+        return
+    end
+
+    if not string match --quiet --regex -- \
+            '^(delete|exists|key|read|read-list|redis|write|write-list)$' \
+            $argv[1]
+        printf 'redfish: %s: invalid subcommand\n' $argv[1] >/dev/stderr
+        return 1
+    end
+
     set --global __redfish_cmd __redfish_(string replace --all - _ $argv[1])
     $__redfish_cmd $argv[2..]
+end
+
+function __redfish_usage
+    printf 'usage: redfish (delete|exists|key|read) KEY\n' >/dev/stderr
+    printf '       redfish read-list VAR KEY\n' >/dev/stderr
+    printf '       redfish redis [ARG ...]\n' >/dev/stderr
+    printf '       redfish write KEY VALUE\n' >/dev/stderr
+    printf '       redfish write-list KEY [VALUE ...]\n' >/dev/stderr
 end
 
 function __redfish_key --argument-names key
