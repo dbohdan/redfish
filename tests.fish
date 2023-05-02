@@ -7,7 +7,7 @@ source redfish.fish
 
 begin
     set --local initial foo1\nfoo2 bar βαζ
-    set --local key fish-redis-test
+    set --local key redfish:tests:k1
     redfish set-list $key $initial
     set --local got
     redfish get-list got $key

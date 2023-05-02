@@ -9,9 +9,6 @@
 # * redis-cli(1);
 # * a Redis server (local by default).
 
-if not set --query __redfish_key_prefix
-    set --global __redfish_key_prefix __redfish:
-end
 if not set --query __redfish_redis_cli_args
     set --global __redfish_redis_cli_args
 end
@@ -49,13 +46,6 @@ function __redfish_usage
     printf '       redfish set-list KEY [VALUE ...]\n' >/dev/stderr
 end
 
-function __redfish_key --argument-names key
-    argparse --min-args 1 --max-args 1 -- $argv
-    or return
-
-    echo -n $__redfish_key_prefix$key
-end
-
 function __redfish_redis
     redis-cli $__redfish_redis_cli_args $argv
 end
@@ -63,8 +53,6 @@ end
 function __redfish_delete --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
-
-    set key (__redfish_key $key)
 
     test "$(__redfish_redis del $key)" -eq 1
     # The following `or return` statement does nothing. While currently
@@ -77,8 +65,6 @@ end
 function __redfish_exists --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
-
-    set key (__redfish_key $key)
 
     test "$(__redfish_redis exists $key)" -eq 1
     or return
@@ -99,14 +85,12 @@ function __redfish_incr --argument-names key inc
         set inc (math - $inc)
     end
 
-    __redfish_redis $cmd (__redfish_key $key) $inc >/dev/null
+    __redfish_redis $cmd $key $inc >/dev/null
 end
 
 function __redfish_get --argument-names key
     argparse --min-args 1 --max-args 1 -- $argv
     or return
-
-    set key (__redfish_key $key)
 
     string unescape "$(__redfish_redis get $key)"
     or return
@@ -116,7 +100,6 @@ function __redfish_get_list --no-scope-shadowing --argument-names __redfish_dst_
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
-    set __redfish_src_key (__redfish_key $__redfish_src_key)
     set $__redfish_dst_var
 
     test "$(__redfish_redis llen $__redfish_src_key)" -eq 0
@@ -143,8 +126,6 @@ function __redfish_set --argument-names key value
     argparse --min-args 2 --max-args 2 -- $argv
     or return
 
-    set key (__redfish_key $key)
-
     __redfish_redis set $key $value >/dev/null
     or return
 end
@@ -152,8 +133,6 @@ end
 function __redfish_set_list --argument-names key
     argparse --min-args 1 -- $argv
     or return
-
-    set key (__redfish_key $key)
 
     __redfish_redis del $key >/dev/null
     or return
