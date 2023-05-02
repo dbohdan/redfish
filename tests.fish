@@ -38,10 +38,10 @@ begin
     redfish exists $key
     or return 106
 
-    redfish delete $key
+    redfish del $key
     or return 107
 
-    redfish delete $key
+    redfish del $key
     and return 108
 
     redfish exists $key
@@ -56,6 +56,12 @@ begin
 
     test (redfish keys $key) = $key
     or return 111
+
+    redfish set $key:a x
+    redfish set $key:b y
+    test "$(redfish del --verbose $key:a $key:b)" -eq 2
+    or return 112
+
 
     return 0
 end

@@ -27,7 +27,7 @@ function redfish --no-scope-shadowing
     end
 
     if not string match --quiet --regex -- \
-            '^(delete|exists|incr|keys|get|get-list|redis|set|set-list)$' \
+            '^(del|exists|incr|keys|get|get-list|redis|set|set-list)$' \
             $argv[1]
         printf 'redfish: %s: invalid subcommand\n' $argv[1] >/dev/stderr
         return 1
@@ -38,7 +38,9 @@ function redfish --no-scope-shadowing
 end
 
 function __redfish_usage
-    printf 'usage: redfish (delete|exists|get) KEY\n' >/dev/stderr
+    printf 'usage: redfish exists KEY\n' >/dev/stderr
+    printf '       redfish del KEY [KEY ...]\n' >/dev/stderr
+    printf '       redfish get KEY\n' >/dev/stderr
     printf '       redfish get-list VAR KEY\n' >/dev/stderr
     printf '       redfish incr KEY [INCREMENT]\n' >/dev/stderr
     printf '       redfish keys PATTERN\n' >/dev/stderr
@@ -51,11 +53,16 @@ function __redfish_redis
     redis-cli $__redfish_redis_cli_args $argv
 end
 
-function __redfish_delete --argument-names key
-    argparse --min-args 1 --max-args 1 -- $argv
+function __redfish_del --argument-names key
+    argparse --min-args 1 v/verbose -- $argv
     or return
 
-    test "$(__redfish_redis del $key)" -gt 0
+    set --local output "$(__redfish_redis del $argv)"
+    if set --query _flag_verbose
+        echo $output
+    end
+
+    test "$output" -eq (count $argv)
     # The following `or return` statement does nothing. While currently
     # useless, it will become necessary for corrent error handling if we add
     # commands below it. Our stylistic choice is to have these returns from
