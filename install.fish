@@ -8,9 +8,7 @@ set --local dst $__fish_config_dir/conf.d/redfish.fish
 if not cp $src $dst
     return 1
 end
-printf 'copied "%s" to "%s"\n' $src $dst
 
-if not source $dst
-    return 1
-end
-printf 'sourced "%s"\n' $dst
+printf 'copied "%s" to "%s"\n' $src $dst
+printf '\nTo use redfish without restarting fish, run the folowing command:%s\n'
+printf 'source %s\n' (string escape $dst)
