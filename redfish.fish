@@ -43,7 +43,7 @@ end
 function __redfish_usage
     printf 'usage: redfish (delete|exists|get|key) KEY\n' >/dev/stderr
     printf '       redfish get-list VAR KEY\n' >/dev/stderr
-    printf '       redfish incr VAR [INCREMENT]\n' >/dev/stderr
+    printf '       redfish incr KEY [INCREMENT]\n' >/dev/stderr
     printf '       redfish redis [ARG ...]\n' >/dev/stderr
     printf '       redfish set KEY VALUE\n' >/dev/stderr
     printf '       redfish set-list KEY [VALUE ...]\n' >/dev/stderr
