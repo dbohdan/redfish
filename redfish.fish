@@ -27,7 +27,7 @@ function redfish --no-scope-shadowing
     end
 
     if not string match --quiet --regex -- \
-            '^(delete|exists|incr|key|get|get-list|redis|set|set-list)$' \
+            '^(delete|exists|incr|keys|get|get-list|redis|set|set-list)$' \
             $argv[1]
         printf 'redfish: %s: invalid subcommand\n' $argv[1] >/dev/stderr
         return 1
@@ -38,9 +38,10 @@ function redfish --no-scope-shadowing
 end
 
 function __redfish_usage
-    printf 'usage: redfish (delete|exists|get|key) KEY\n' >/dev/stderr
+    printf 'usage: redfish (delete|exists|get) KEY\n' >/dev/stderr
     printf '       redfish get-list VAR KEY\n' >/dev/stderr
     printf '       redfish incr KEY [INCREMENT]\n' >/dev/stderr
+    printf '       redfish keys PATTERN\n' >/dev/stderr
     printf '       redfish redis [ARG ...]\n' >/dev/stderr
     printf '       redfish set KEY VALUE\n' >/dev/stderr
     printf '       redfish set-list KEY [VALUE ...]\n' >/dev/stderr
@@ -68,6 +69,13 @@ function __redfish_exists --argument-names key
 
     test "$(__redfish_redis exists $key)" -eq 1
     or return
+end
+
+function __redfish_keys --argument-names pattern
+    argparse --min-args 1 --max-args 1 -- $argv
+    or return
+
+    __redfish_redis keys $pattern
 end
 
 function __redfish_incr --argument-names key inc

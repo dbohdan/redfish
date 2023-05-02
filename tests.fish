@@ -54,5 +54,8 @@ begin
     test (redfish get $key) -eq 3
     or return 110
 
+    test (redfish keys $key) = $key
+    or return 111
+
     return 0
 end
