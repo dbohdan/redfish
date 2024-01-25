@@ -1,5 +1,5 @@
 # redfish: use Redis as a key-value store from fish.
-# Copyright (c) 2023 D. Bohdan. License: MIT.
+# Copyright (c) 2023-2024 D. Bohdan. License: MIT.
 #
 # Installation:
 # Put this file in $__fish_config_dir/conf.d/.
@@ -39,8 +39,8 @@ end
 
 function __redfish_usage
     printf 'usage: redfish exists KEY\n' >/dev/stderr
-    printf '       redfish del KEY [KEY ...]\n' >/dev/stderr
-    printf '       redfish get KEY\n' >/dev/stderr
+    printf '       redfish del [-v|--verbose] KEY [KEY ...]\n' >/dev/stderr
+    printf '       redfish get [-r|--raw] KEY\n' >/dev/stderr
     printf '       redfish get-list VAR KEY\n' >/dev/stderr
     printf '       redfish incr KEY [INCREMENT]\n' >/dev/stderr
     printf '       redfish keys PATTERN\n' >/dev/stderr
@@ -104,11 +104,18 @@ function __redfish_incr --argument-names key inc
 end
 
 function __redfish_get --argument-names key
-    argparse --min-args 1 --max-args 1 -- $argv
+    argparse --min-args 1 --max-args 1 r/raw -- $argv
     or return
 
-    string unescape "$(__redfish_redis get $key)"
+    set --local value "$(__redfish_redis get $key)"
     or return
+
+    if not set --query _flag_raw
+        set value (string unescape $value)
+        or return
+    end
+
+    echo -n $value
 end
 
 function __redfish_get_list --no-scope-shadowing --argument-names __redfish_dst_var __redfish_src_key

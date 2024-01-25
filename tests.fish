@@ -1,6 +1,6 @@
 #! /usr/bin/env fish
 # redfish: use Redis as a key-value store from fish.
-# Copyright (c) 2023 D. Bohdan. License: MIT.
+# Copyright (c) 2023-2024 D. Bohdan. License: MIT.
 
 cd "$(path dirname "$(status filename)")"
 source redfish.fish
@@ -61,6 +61,10 @@ begin
     redfish set $key:b y
     test "$(redfish del --verbose $key:a $key:b)" -eq 2
     or return 112
+
+    set got "$(redfish get --raw $key)"
+    test "$got" = ''
+    or return 113
 
 
     return 0
