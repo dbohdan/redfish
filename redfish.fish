@@ -38,15 +38,15 @@ function redfish --no-scope-shadowing
 end
 
 function __redfish_usage
-    printf 'usage: redfish exists KEY\n' >/dev/stderr
-    printf '       redfish del [-v|--verbose] KEY [KEY ...]\n' >/dev/stderr
-    printf '       redfish get [-r|--raw] KEY\n' >/dev/stderr
-    printf '       redfish get-list VAR KEY\n' >/dev/stderr
-    printf '       redfish incr KEY [INCREMENT]\n' >/dev/stderr
-    printf '       redfish keys PATTERN\n' >/dev/stderr
-    printf '       redfish redis [ARG ...]\n' >/dev/stderr
-    printf '       redfish set KEY VALUE\n' >/dev/stderr
-    printf '       redfish set-list KEY [VALUE ...]\n' >/dev/stderr
+    printf 'usage: redfish exists KEY\n'
+    printf '       redfish del [-v|--verbose] KEY [KEY ...]\n'
+    printf '       redfish get [-r|--raw] KEY\n'
+    printf '       redfish get-list VAR KEY\n'
+    printf '       redfish incr KEY [INCREMENT]\n'
+    printf '       redfish keys PATTERN\n'
+    printf '       redfish redis [ARG ...]\n'
+    printf '       redfish set KEY VALUE\n'
+    printf '       redfish set-list KEY [VALUE ...]\n'
 end
 
 function __redfish_redis
