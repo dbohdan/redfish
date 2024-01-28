@@ -1,9 +1,10 @@
 #! /usr/bin/env fish
-# redfish: use Redis as a key-value store from fish.
-# Copyright (c) 2023-2024 D. Bohdan. License: MIT.
+# redfish: Use Redis from the fish shell.
+# Copyright (c) 2023-2024 D. Bohdan.
+# License: MIT.
 
 cd "$(path dirname "$(status filename)")"
-source redfish.fish
+source functions/redfish.fish
 
 begin
     set --local initial foo1\nfoo2 bar βαζ

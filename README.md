@@ -16,6 +16,7 @@ and also fish lists as Redis lists.
 
 - [Requirements](#requirements)
 - [Usage](#usage)
+- [Installation](#installation)
 - [Motivation](#motivation)
 - [Against complex scripting in fish](#against-complex-scripting-in-fish)
 - [License](#license)
@@ -44,6 +45,23 @@ usage: redfish exists KEY
 See
 [`example.fish`](example.fish)
 for an example of how you can use redfish.
+
+## Installation
+
+### Using Fisher
+
+To install redfish with [Fisher](https://github.com/jorgebucaran/fisher),
+run the command:
+
+```fish
+fisher install dbohdan/redfish
+```
+
+### Manual
+
+1. Clone the repository
+   or download and extract a source archive.
+2. Run `install.fish`.
 
 ## Motivation
 

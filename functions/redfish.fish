@@ -1,19 +1,16 @@
-# redfish: use Redis as a key-value store from fish.
+# redfish: Use Redis from the fish shell.
 # Copyright (c) 2023-2024 D. Bohdan. License: MIT.
 #
-# Installation:
-# Put this file in $__fish_config_dir/conf.d/.
-#
 # Requirements:
-# * fish 3.4.1 or later (older versions may work but have not been tested);
-# * redis-cli(1);
-# * a Redis server (local by default).
-
-if not set --query __redfish_redis_cli_args
-    set --global __redfish_redis_cli_args
-end
+# - fish 3.4 or later (older versions do not work);
+# - redis-cli(1);
+# - A Redis server (local by default).
 
 function redfish --no-scope-shadowing
+    if not set --query __redfish_redis_cli_args
+        set --global __redfish_redis_cli_args
+    end
+
     if test (count $argv) -eq 0
         printf 'redfish: missing subcommand\n' >/dev/stderr
         return 1
