@@ -18,7 +18,7 @@ and also fish lists as Redis lists.
 - [Usage](#usage)
 - [Installation](#installation)
 - [Motivation](#motivation)
-- [Against complex scripting in fish](#against-complex-scripting-in-fish)
+- [Problems with complex scripting in fish](#problems-with-complex-scripting-in-fish)
 - [License](#license)
 
 ## Requirements
@@ -76,15 +76,14 @@ only available over the network and not just for fish.
 If you don't need this aspect,
 another dictionary implementation is probably better.
 
-## Against complex scripting in fish
+## Problems with complex scripting in fish
 
-I didn't like working on redfish.
-I think the design of fish as a scripting language
-(as of version 3.4)
-made it harder than it should be.
-It has lead me to believe that you shouldn't write complex scripts in fish.
+When writing redfish and [`example.fish`](example.fish),
+I discovered that several aspects of the language design
+invited bugs and made development distinctly less fun for me.
+My experience has lead me to believe that you shouldn't write complex scripts in fish.
 Make no mistake:
-I still like fish as an interactive shell.
+I still very much like fish as an interactive shell.
 I have written about
 [my problems with the language](https://dbohdan.com/fish-scripting).
 
