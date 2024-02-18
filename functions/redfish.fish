@@ -59,7 +59,7 @@ function __redfish_del --argument-names key
         echo $output
     end
 
-    test "$output" -eq (count $argv)
+    test $output -eq (count $argv)
     # The following `or return` statement does nothing. While currently
     # useless, it will become necessary for corrent error handling if we add
     # commands below it. Our stylistic choice is to have these returns from
@@ -84,15 +84,15 @@ end
 
 function __redfish_incr --argument-names key inc
     set --local count (count $argv)
-    if test "$count" -lt 1 -o "$count" -gt 2
+    if test $count -lt 1 -o $count -gt 2
         return 1
     end
 
     set --local cmd incrby
-    if test -z "$inc"
+    if test -z $inc
         set inc 1
     end
-    if test "$inc" -lt 0
+    if test $inc -lt 0
         set cmd decrby
         set inc (math - $inc)
     end
@@ -159,9 +159,9 @@ function __redfish_set_list --argument-names key
     test (count $argv) -eq 1
     and return
 
-    set --local rpushed (__redfish_redis rpush $key (string escape $argv[2..]))
+    set --local rpushed "$(__redfish_redis rpush $key (string escape $argv[2..]))"
     or return
 
-    test "$rpushed" -eq (count $argv[2..])
+    test $rpushed -eq (count $argv[2..])
     or return
 end
